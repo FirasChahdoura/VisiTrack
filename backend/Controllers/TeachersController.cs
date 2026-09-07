@@ -46,7 +46,7 @@ namespace Backend.Controllers
             string? rank, int? notInspectedInMonths)
         {
             var results = await _inspectorService.SearchTeachers(name, day, fromTime, toTime, rank, notInspectedInMonths);
-            return Ok(results.Select(t => new
+            var shaped = results.Select(t => new
             {
                 t.Id, t.FirstName, t.LastName, t.Email, t.Rank,
                 Schedule = t.ScheduleEntries.Select(s => new { s.Day, s.StartTime, s.EndTime }),
@@ -54,7 +54,9 @@ namespace Backend.Controllers
                     .OrderByDescending(i => i.Date)
                     .Select(i => (DateTime?)i.Date)
                     .FirstOrDefault()
-            }));
+            }).ToList();
+
+            return Ok(new { count = shaped.Count, results = shaped });
         }
 
         [HttpGet("{id}")]

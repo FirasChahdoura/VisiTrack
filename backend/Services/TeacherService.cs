@@ -40,10 +40,14 @@ namespace Backend.Services
             teacher.FirstName = dto.FirstName;
             teacher.LastName = dto.LastName;
             teacher.DateOfBirth = dto.DateOfBirth;
-            teacher.NominationDate = dto.NominationDate;
+            teacher.Diploma = dto.Diploma;
 
             if (dto.Rank != null && Enum.TryParse<Rank>(dto.Rank, true, out var parsedRank))
+            {
                 teacher.Rank = parsedRank;
+                // Non-titularisé ranks never have a nomination date, regardless of what was submitted
+                teacher.NominationDate = parsedRank.IsTitularise() ? dto.NominationDate : null;
+            }
 
             await _db.SaveChangesAsync();
             return teacher;

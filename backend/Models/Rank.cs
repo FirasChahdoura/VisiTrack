@@ -1,8 +1,15 @@
 namespace Backend.Models
 {
-    // TODO: replace with real rank names once confirmed with the Inspector
     public enum Rank
     {
-        Unspecified
+        ProfesseurEcolesPrimaires,
+        ProfesseurEcolesPrimairesHorsClasse,
+        ProfesseurEcolesPrimairesHorsClasseEmerite,
+        ProfesseurPrincipalEcolesPrimaires,
+        ProfesseurPrincipalHorsClasseEcolesPrimaires,
+        ProfesseurEmeriteEcolesPrimaires,
+        Stagiaire1ereAnnee,
+        Stagiaire2emeAnnee,
+        Contractuelle
     }
 }

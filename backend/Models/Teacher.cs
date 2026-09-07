@@ -17,6 +17,7 @@ namespace Backend.Models
         public DateTime? DateOfBirth { get; set; }
         public DateTime? NominationDate { get; set; }
         public Rank? Rank { get; set; }
+        public string? Diploma { get; set; }
 
         public ICollection<Inspection> Inspections { get; set; } = new List<Inspection>();
         public ICollection<ScheduleEntry> ScheduleEntries { get; set; } = new List<ScheduleEntry>();

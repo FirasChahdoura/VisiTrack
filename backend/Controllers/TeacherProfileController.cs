@@ -27,7 +27,7 @@ namespace Backend.Controllers
             try
             {
                 var teacher = await _teacherService.UpdatePersonalInfo(GetTeacherId(), dto);
-                return Ok(new { teacher.Id, teacher.FirstName, teacher.LastName, teacher.DateOfBirth, teacher.NominationDate, teacher.Rank });
+                return Ok(new { teacher.Id, teacher.FirstName, teacher.LastName, teacher.DateOfBirth, teacher.NominationDate, teacher.Rank, teacher.Diploma });
             }
             catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
         }

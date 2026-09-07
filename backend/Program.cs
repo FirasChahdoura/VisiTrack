@@ -10,7 +10,7 @@ using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
+builder.Services.AddControllers(); // register the routing system
 
 builder.Services.AddDbContext<VisiTrackDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -47,10 +47,13 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<VisiTrackDbContext>();
     if (!db.Schools.Any())
     {
-        db.Schools.AddRange(
-            new School { Name = "School A (placeholder)" },
-            new School { Name = "School B (placeholder)" }
-        );
+        string[] schoolNames = {
+            "El-Folla", "Essaha", "El Machtel 1", "El Machtel 2",
+            "Ksar Saïd 1", "Ksar Saïd 2", "Ksar Saïd 3",
+            "Jayara 1", "Jayara 2", "El Attar", "Antit",
+            "Okba 1", "Okba 2", "Ghdir El Golla", "El Waha", "Borj Chakir"
+        };
+        db.Schools.AddRange(schoolNames.Select(name => new School { Name = name }));
         db.SaveChanges();
     }
 

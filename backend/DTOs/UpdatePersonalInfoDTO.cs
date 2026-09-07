@@ -7,5 +7,6 @@ namespace Backend.Dtos
         public DateTime? DateOfBirth { get; set; }
         public DateTime? NominationDate { get; set; }
         public string? Rank { get; set; }
+        public string? Diploma { get; set; }
     }
 }
