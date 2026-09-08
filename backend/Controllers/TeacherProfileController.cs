@@ -21,6 +21,19 @@ namespace Backend.Controllers
         private int GetTeacherId() =>
             int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
+        [HttpGet]
+        public async Task<IActionResult> GetProfile()
+        {
+            var teacher = await _teacherService.GetOwnProfile(GetTeacherId());
+            return Ok(new
+            {
+                teacher.Id, teacher.FirstName, teacher.LastName, teacher.Email,
+                teacher.DateOfBirth, teacher.NominationDate, teacher.Rank, teacher.Diploma,
+                Schedule = teacher.ScheduleEntries.Select(s => new { s.Id, s.Day, s.StartTime, s.EndTime }),
+                Inspections = teacher.Inspections.OrderByDescending(i => i.Date).Select(i => new { i.Id, i.Date })
+            });
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdatePersonalInfo(UpdatePersonalInfoDto dto)
         {

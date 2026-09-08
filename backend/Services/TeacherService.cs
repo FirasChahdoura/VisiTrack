@@ -14,6 +14,17 @@ namespace Backend.Services
             _db = db;
         }
 
+        public async Task<Teacher> GetOwnProfile(int teacherId)
+        {
+            var teacher = await _db.Teachers
+                .Include(t => t.ScheduleEntries)
+                .Include(t => t.Inspections)
+                .FirstOrDefaultAsync(t => t.Id == teacherId);
+
+            if (teacher == null) throw new InvalidOperationException("Teacher not found.");
+            return teacher;
+        }
+
         public async Task<List<Teacher>> GetPending()
         {
             return await _db.Teachers

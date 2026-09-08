@@ -43,12 +43,13 @@ namespace Backend.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> Search(
             string? name, string? day, string? fromTime, string? toTime,
-            string? rank, int? notInspectedInMonths)
+            string? rank, int? notInspectedInMonths, int? schoolId)
         {
-            var results = await _inspectorService.SearchTeachers(name, day, fromTime, toTime, rank, notInspectedInMonths);
+            var results = await _inspectorService.SearchTeachers(name, day, fromTime, toTime, rank, notInspectedInMonths, schoolId);
             var shaped = results.Select(t => new
             {
                 t.Id, t.FirstName, t.LastName, t.Email, t.Rank,
+                School = t.School.Name,
                 Schedule = t.ScheduleEntries.Select(s => new { s.Day, s.StartTime, s.EndTime }),
                 LastInspectionDate = t.Inspections
                     .OrderByDescending(i => i.Date)
@@ -68,6 +69,7 @@ namespace Backend.Controllers
             return Ok(new
             {
                 teacher.Id, teacher.FirstName, teacher.LastName, teacher.Email, teacher.Rank,
+                teacher.DateOfBirth, teacher.NominationDate, teacher.Diploma,
                 School = teacher.School.Name,
                 Schedule = teacher.ScheduleEntries.Select(s => new { s.Day, s.StartTime, s.EndTime }),
                 Inspections = teacher.Inspections

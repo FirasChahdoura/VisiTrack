@@ -15,13 +15,17 @@ namespace Backend.Services
 
         public async Task<List<Teacher>> SearchTeachers(
             string? name, string? day, string? fromTime, string? toTime,
-            string? rank, int? notInspectedInMonths)
+            string? rank, int? notInspectedInMonths, int? schoolId)
         {
             var query = _db.Teachers
+                .Include(t => t.School)
                 .Include(t => t.ScheduleEntries)
                 .Include(t => t.Inspections)
                 .Where(t => t.Status == TeacherStatus.Approved)
                 .AsQueryable();
+
+            if (schoolId.HasValue)
+                query = query.Where(t => t.SchoolId == schoolId.Value);
 
             if (!string.IsNullOrWhiteSpace(name))
                 query = query.Where(t =>
