@@ -2,22 +2,34 @@ import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [role, setRole] = useState(localStorage.getItem('role'));
+function decodeToken(token) {
+  if (!token) return null;
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch {
+    return null;
+  }
+}
 
-  const login = (newToken, newRole) => {
+function isTokenValid(token) {
+  const payload = decodeToken(token);
+  if (!payload || !payload.exp) return false;
+  return payload.exp * 1000 > Date.now(); // exp is in seconds, Date.now() is ms
+}
+
+export function AuthProvider({ children }) {
+  const storedToken = localStorage.getItem('token');
+  const [token, setToken] = useState(isTokenValid(storedToken) ? storedToken : null);
+  const role = token ? decodeToken(token)?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] : null;
+
+  const login = (newToken) => {
     localStorage.setItem('token', newToken);
-    localStorage.setItem('role', newRole);
     setToken(newToken);
-    setRole(newRole);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('role');
     setToken(null);
-    setRole(null);
   };
 
   return (

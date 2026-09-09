@@ -22,11 +22,19 @@ namespace Backend.Services
 
         public async Task<Teacher> Register(RegisterRequestDto dto)
         {
-            bool emailExists = await _db.Teachers.AnyAsync(t => t.Email == dto.Email);
-            if (emailExists)
+            var existing = await _db.Teachers.FirstOrDefaultAsync(t => t.Email == dto.Email);
+            if (existing != null)
             {
-                throw new InvalidOperationException("Email already registered.");
+                if (existing.Status != TeacherStatus.Rejected)
+                    throw new InvalidOperationException("Email already registered.");
+
+                _db.Teachers.Remove(existing);
+                await _db.SaveChangesAsync();
             }
+
+            bool schoolExists = await _db.Schools.AnyAsync(s => s.Id == dto.SchoolId);
+            if (!schoolExists)
+                throw new InvalidOperationException("Invalid school selected.");
 
             var teacher = new Teacher
             {

@@ -52,7 +52,8 @@ namespace backend.Migrations
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "TEXT", nullable: true),
                     NominationDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    Rank = table.Column<int>(type: "INTEGER", nullable: true)
+                    Rank = table.Column<int>(type: "INTEGER", nullable: true),
+                    Diploma = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -62,7 +63,7 @@ namespace backend.Migrations
                         column: x => x.SchoolId,
                         principalTable: "Schools",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(

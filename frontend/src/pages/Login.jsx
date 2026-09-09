@@ -22,7 +22,7 @@ export default function Login() {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
 
-      login(token, role);
+      login(token);
       navigate(role === 'Inspector' ? '/inspector' : '/teacher');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed.');

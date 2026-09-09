@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend.Migrations
 {
     [DbContext(typeof(VisiTrackDbContext))]
-    [Migration("20260828151052_FixSchoolDeleteBehavior")]
-    partial class FixSchoolDeleteBehavior
+    [Migration("20260909153659_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,6 +108,9 @@ namespace backend.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Diploma")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")

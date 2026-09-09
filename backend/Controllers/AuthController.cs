@@ -1,6 +1,7 @@
 using Backend.Dtos;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Backend.Controllers
 {
@@ -37,6 +38,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> Login(LoginRequestDto dto)
         {
             try

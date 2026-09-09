@@ -6,14 +6,24 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers(); // register the routing system
 
-builder.Services.AddDbContext<VisiTrackDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDbContext<VisiTrackDbContext>(options =>
+        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
+else
+{
+    builder.Services.AddDbContext<VisiTrackDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("ProductionConnection")));
+}
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TeacherService>();
@@ -50,11 +60,34 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("LoginPolicy", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<VisiTrackDbContext>();
+
+    if (app.Environment.IsDevelopment())
+    {
+        db.Database.Migrate();
+    }
+    else
+    {
+        db.Database.EnsureCreated();
+    }
+
     if (!db.Schools.Any())
     {
         string[] schoolNames = {
@@ -69,12 +102,18 @@ using (var scope = app.Services.CreateScope())
 
     if (!db.Inspectors.Any())
     {
-        db.Inspectors.Add(new Inspector
+        var inspectorEmail = builder.Configuration["InspectorSeed:Email"];
+        var inspectorPassword = builder.Configuration["InspectorSeed:Password"];
+
+        if (!string.IsNullOrWhiteSpace(inspectorEmail) && !string.IsNullOrWhiteSpace(inspectorPassword))
         {
-            Email = "inspector@visitrack.local",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("InspectorPass123")
-        });
-        db.SaveChanges();
+            db.Inspectors.Add(new Inspector
+            {
+                Email = inspectorEmail,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(inspectorPassword)
+            });
+            db.SaveChanges();
+        }
     }
 }
 
@@ -89,6 +128,7 @@ app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapControllers();
 
