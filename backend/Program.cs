@@ -50,11 +50,13 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<InspectorService>();
 
+var frontendUrl = builder.Configuration["FrontendUrl"] ?? "http://localhost:5173";
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(frontendUrl)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
