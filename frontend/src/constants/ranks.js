@@ -12,3 +12,11 @@ export const RANKS = [
 
 // Ranks that do NOT get a nomination date
 export const NON_TITULARISE_RANKS = ['Stagiaire1ereAnnee', 'Stagiaire2emeAnnee', 'Contractuelle'];
+
+export const DAY_LABELS_FR = {
+  Monday: 'Lundi',
+  Tuesday: 'Mardi',
+  Wednesday: 'Mercredi',
+  Thursday: 'Jeudi',
+  Friday: 'Vendredi',
+};

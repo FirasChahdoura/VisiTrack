@@ -48,10 +48,14 @@ namespace Backend.Services
             var teacher = await _db.Teachers.FindAsync(teacherId);
             if (teacher == null) throw new InvalidOperationException("Teacher not found.");
 
+            bool schoolExists = await _db.Schools.AnyAsync(s => s.Id == dto.SchoolId);
+            if (!schoolExists) throw new InvalidOperationException("Invalid school selected.");
+
             teacher.FirstName = dto.FirstName;
             teacher.LastName = dto.LastName;
             teacher.DateOfBirth = dto.DateOfBirth;
             teacher.Diploma = dto.Diploma;
+            teacher.SchoolId = dto.SchoolId;
 
             if (dto.Rank != null && Enum.TryParse<Rank>(dto.Rank, true, out var parsedRank))
             {

@@ -28,7 +28,7 @@ namespace Backend.Controllers
             return Ok(new
             {
                 teacher.Id, teacher.FirstName, teacher.LastName, teacher.Email,
-                teacher.DateOfBirth, teacher.NominationDate, teacher.Rank, teacher.Diploma,
+                teacher.DateOfBirth, teacher.NominationDate, teacher.Rank, teacher.Diploma, teacher.SchoolId,
                 Schedule = teacher.ScheduleEntries.Select(s => new { s.Id, s.Day, s.StartTime, s.EndTime }),
                 Inspections = teacher.Inspections.OrderByDescending(i => i.Date).Select(i => new { i.Id, i.Date })
             });
@@ -40,7 +40,7 @@ namespace Backend.Controllers
             try
             {
                 var teacher = await _teacherService.UpdatePersonalInfo(GetTeacherId(), dto);
-                return Ok(new { teacher.Id, teacher.FirstName, teacher.LastName, teacher.DateOfBirth, teacher.NominationDate, teacher.Rank, teacher.Diploma });
+                return Ok(new { teacher.Id, teacher.FirstName, teacher.LastName, teacher.DateOfBirth, teacher.NominationDate, teacher.Rank, teacher.Diploma, teacher.SchoolId });
             }
             catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
         }
